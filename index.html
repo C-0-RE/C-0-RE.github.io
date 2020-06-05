@@ -67,7 +67,7 @@
     <article id="post-使用-hexo-github-搭建免费个人博客教程" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/" class="article-date">
-  <time datetime="2020-06-05T13:27:14.000Z" itemprop="datePublished">2020-06-05</time>
+  <time datetime="2020-06-05T13:30:54.000Z" itemprop="datePublished">2020-06-05</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用hex hexo + github 搭建免费个人博客教程</a>
+      <a class="article-title" href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用 hexo + github 搭建免费个人博客教程</a>
     </h1>
   
 
@@ -86,11 +86,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>　最近也没学啥新东西，恰巧看到学长在搭自己的博客，然后兴趣使来，就也想整一个简单的个人博客，然后由于种种原因，这个过程进行的并不是那么的顺利，于是就有了这篇博客，借此记录也希望观者能顺利的搭建属于自己的个人博客。</p>
+<h2 id="一、借助Github搭建博客"><a href="#一、借助Github搭建博客" class="headerlink" title="一、借助Github搭建博客"></a>一、借助Github搭建博客</h2><p>　借助Github搭建博客有许多优点，<br>1.无需自己搭建服务器（零成本！）<br>2.可以绑定自己的域名（虽然不是广义上的私人订制）<br>3.使用标记语言，比如Markdown<br>　当然由于是零成本、纯白嫖，肯定限制也是不少的，比如做出来的博客是静态网页，然后由于是基于GIT来对博客进行操作，很多东西都得靠命令来实现，但是总的来说用来搭建个人博客还是极好的选择。下面来正经介绍操作流程：<br>1.注册一个Github账号，这没啥好说的<br>2.创建一个仓库，仓库名为 ==你注册时的用户名（不是昵称）.github.io== ，将来你的个人博客的域名就是这个了，是不是很简单<br>3.仓库创建成功后可能会有延迟，也就是可能得等一段时间才能生效</p>
+<h2 id="二、搭建Hexo"><a href="#二、搭建Hexo" class="headerlink" title="二、搭建Hexo"></a>二、搭建Hexo</h2><p>　Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Coding上，是搭建博客的首选框架。在Hexo上面有许多现成的个人博客网站模板，安装部署完成后我们可以直接使用，也可以对其进行个性化的改造。Hexo的搭建步骤相比Github的操作复杂了许多，也就是它让我摸索了很长时间，然后可能是由于版本更新，导致网上的老教程都不太靠谱（至少对我来说挺坑的…），然后下面来详细介绍一下搭建步骤，建议在安装过程中关闭杀毒软件，因为会导致某些操作无法成功：<br>1.安装Git<br>2.安装Nodejs<br>3.安装Hexo</p>
+<h4 id="1-安装Git"><a href="#1-安装Git" class="headerlink" title="1.安装Git"></a>1.安装Git</h4><p>　到官网下载Git<a href="https://git-scm.com/downloads" target="_blank" rel="noopener">https://git-scm.com/downloads</a>.安装的时候一路点击Next就行，因为我也不知道都是些啥…反正默认就对了hh</p>
+<h4 id="2-安装Nodejs"><a href="#2-安装Nodejs" class="headerlink" title="2.安装Nodejs"></a>2.安装Nodejs</h4><p>　这玩意和第三步的教程坑死我了…whatever，首先还是先去官网把它下载下来<a href="https://nodejs.org/zh-cn/" target="_blank" rel="noopener">https://nodejs.org/zh-cn/</a>.然后安装为了防止后面出现乱七八糟的错误还是推荐默认选项，安装位置它要c盘就c盘吧，c盘应该也不缺这么点空间。<br>　安装完成后，键盘同时按住（WIN+R）呼出运行，输入cmd运行命令提示符，然后输入node -v，如果正常显示版本号既nodejs安装成功，再输入npm -v，同理显示版本号即可。关于npm，npm的作用就是对Node.js依赖的包进行管理，也可以理解为用来安装/卸载Node.js需要装的东西，新版的nodejs自带npm，安装时两者一起安装。<br>　到此剩下的步骤就是和网上的教程区别最大的地方，根据我一下午的尝试，安装时nodejs会自动在D盘创建一个叫NodeJS的文件夹，里面包括node_global和node_cache这两个子文件夹，（而如果按照网上的教程这两个文件夹需要你自己可选创建，然后还要设置一堆乱七八糟的东西），接下来我们需要设置电脑的环境变量，基本步骤是右键计算机，选择属性，选择左边的高级系统设置，选择环境变量。这里我们应该是需要设置两个地方就行，第一个是上面的用户变量，双击path进入编辑，将带AppData\Roaming\npm的这一行删除，替换为D:\NodeJS\node_global，点击确定即可，第二个是下面的系统变量，新建一个[NODE_PATH]，下面那行输入[D:\Develop\nodejs\node_global\node_modules]，点击确定即可。</p>
+<h4 id="3-安装Hexo"><a href="#3-安装Hexo" class="headerlink" title="3.安装Hexo"></a>3.安装Hexo</h4><p>　鼠标右键点击桌面，如果Git安装成功的话右键菜单中会多出两个选项，选择其中的Git Bash，然后再出现的窗口中输入npm install hexo-cli -g，敲回车，然后在电脑的某个地方新建一个名为hexo的文件夹（名字和位置都随意），但是由于这个文件夹将来就作为你存放网站相关代码的地方，所以最好不要随便放。右键这个文件夹，同样选择Git Bash，输入hexo init，回车，hexo会自动下载一些文件到这个目录，然后我们再打开电脑的环境变量，在下面的系统变量中找到path，双击进入，添加新的一行内容为D:\NodeJS\node_global\node_modules\hexo\bin，然后我们可以在hexo中输入hexo -v，查看版本号同上，然后我们可以输入hexo -g，回车，再输入hexo -s，回车，执行以上命令之后打开浏览器访问 <a href="http://localhost:4000" target="_blank" rel="noopener">http://localhost:4000</a> 即可看到hexo为我们提供的默认页面。</p>
+<h2 id="三、将我们的个人博客上传到Github"><a href="#三、将我们的个人博客上传到Github" class="headerlink" title="三、将我们的个人博客上传到Github"></a>三、将我们的个人博客上传到Github</h2><p>　此时我们的博客还是存放在本地的，我们如果想能通过我们在第一步获取到的域名访问到该博客，还需将其上传到Github，如果你一切都配置好了，发布上传很容易，在Git Bash中一句hexo d就搞定了，当然关键还是你要把所有东西配置好。<br>　首先我们需要配置ssh Key，在Git Bash中输入cd ~/.ssh，如果提示：No such file or directory 则正常，说明我们是第一次使用Git，然后我们再输入$ ssh-keygen -t rsa -C “你在Github上注册时使用的邮箱地址”，然后git会输出<br>Generating public/private rsa key pair.<br>Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):<br>这两句话，敲回车就好，再然后系统会要你输入密码，这个密码会在你提交项目时使用，如果为空的话提交项目时则不用输入。这个设置是防止别人往你的项目里提交内容。我输入密码时好像看不到输入了啥…应该两次输的一样就行。最后看到一个框框中间一堆符号就说明成功设置ssh key了。<br>　接下里我们需要将ssh Key添加到Github，在类似于C:\Users\16875.ssh的文件夹中你会看到一个id_rsa.pub文件，用记事本将其打开复制其中的所有内容，如果看不到这个文件，你可能需要设置显示隐藏文件。准确的复制这个文件的内容，才能保证设置的成功。然后登陆Github，点击右上角的 Account Settings—-&gt;SSH Public keys —-&gt; add another public keys，把你本地生成的密钥复制到里面（key文本框中）， 点击 add key 就ok了。<br>　接下来我们可以测试一下设置是否成功，在Git Bash中输入$ ssh -T <a href="mailto:git@github.com">git@github.com</a>，如果响应以下内容<br>The authenticity of host ‘github.com (207.97.227.239)’ can’t be established.<br>RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.<br>Are you sure you want to continue connecting (yes/no)?<br>接着输入yes，然后你就会看到一条确认成功的语句。<br>　最后，我们还需要完善我们的个人信息，Git会根据用户的名字和邮箱来记录提交。GitHub也是用这些信息来做权限的处理，输入下面的代码进行个人信息的设置，把名称和邮箱替换成你在Github上注册时的，名字注意不是昵称是用户名。<br>$ git config –global user.name “C-0-RE”//用户名<br>$ git config –global user.email  “<a href="mailto:C-0-RE@gmail.com">C-0-RE@gmail.com</a>“//填写自己的邮箱<br>到此ssh Key配置就已全部完成。<br>　最后的最后，我们要打开hexo文件夹，里面有一个名为_config.yml的文件，推荐用sublime打开，翻到文件的最下面，修改其中deploy的部分为如下：<br>deploy:<br>  type: git<br>  repository: <a href="mailto:git@github.com">git@github.com</a>:你Github的用户名/你Github的用户名.github.io.git<br>  branch: master<br> 然后保存，关闭文件，再打开Git Bash输入一条命令npm install hexo-deployer-git –save，该命令用来安装一个插件，辅助提交。最后如本段开头所说的，输入hexo d，即可将本次有改动的代码全部提交，没有改动的不会。</p>
+<h2 id="四、结语"><a href="#四、结语" class="headerlink" title="四、结语"></a>四、结语</h2><p>　至此，应该就可以通过类似于<a href="http://c-0-re.github.io/的域名直接访问我们的个人博客了，当然，“广阔天地，大有作为”，即使是这样一个十分简单的博客，也还有许多可以让我们发挥创造、学习、修改的地方。" target="_blank" rel="noopener">http://c-0-re.github.io/的域名直接访问我们的个人博客了，当然，“广阔天地，大有作为”，即使是这样一个十分简单的博客，也还有许多可以让我们发挥创造、学习、修改的地方。</a></p>
+<p>最后附上常用的hexo命令：<br>hexo new “postName” #新建文章<br>hexo new page “pageName” #新建页面<br>hexo generate #生成静态页面至public目录<br>hexo server #开启预览访问端口（默认端口4000，’ctrl + c’关闭server）<br>hexo deploy #部署到GitHub<br>hexo help  # 查看帮助<br>hexo version  #查看Hexo的版本</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/" data-id="ckb28vykr0001h4usfoo9dhes" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/" data-id="ckb2dg8fz0001x4us1h0c2384" class="article-share-link">Share</a>
       
       
     </footer>
@@ -122,11 +131,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="New-start"><a href="#New-start" class="headerlink" title="New start,"></a><em>New start</em>,</h3><h3 id="New-journey"><a href="#New-journey" class="headerlink" title="　　　New journey."></a>　　　<em>New journey</em>.</h3><h3 id="Let’s-do-something"><a href="#Let’s-do-something" class="headerlink" title="Let’s do something."></a><em>Let’s do something</em>.</h3>
+        <h3 id="New-start"><a href="#New-start" class="headerlink" title="New start,"></a><em>New start</em>,</h3><h3 id="New-journey-Let’s-do-something"><a href="#New-journey-Let’s-do-something" class="headerlink" title="　　　New journey.　　　　 Let’s do something."></a>　　　<em>New journey</em>.　　　　 <em>Let’s do something</em>.</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/05/welcome-to-my-blog/" data-id="ckb28vykh0000h4us72k82ku7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/06/05/welcome-to-my-blog/" data-id="ckb2dg8fm0000x4us8478a5gm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -167,7 +176,7 @@
       <ul>
         
           <li>
-            <a href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用hex hexo + github 搭建免费个人博客教程</a>
+            <a href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用 hexo + github 搭建免费个人博客教程</a>
           </li>
         
           <li>
