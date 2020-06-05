@@ -4,11 +4,24 @@
   
     
     <entry>
-      <title>welcome to my blog</title>
+      <title>使用hex hexo + github 搭建免费个人博客教程</title>
+      <link href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/"/>
+      <url>/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Welcome To My Blog</title>
       <link href="/2020/06/05/welcome-to-my-blog/"/>
       <url>/2020/06/05/welcome-to-my-blog/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="New-start"><a href="#New-start" class="headerlink" title="New start,"></a><em>New start</em>,</h3><h3 id="New-journey"><a href="#New-journey" class="headerlink" title="　　　New journey."></a>　　　<em>New journey</em>.</h3><h3 id="Let’s-do-something"><a href="#Let’s-do-something" class="headerlink" title="Let’s do something."></a><em>Let’s do something</em>.</h3>]]></content>
       
       
       
