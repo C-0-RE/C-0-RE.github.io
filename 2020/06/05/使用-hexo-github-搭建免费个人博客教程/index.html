@@ -15,7 +15,7 @@
 <meta property="og:description" content="前言：　　最近也没学啥新东西，恰巧看到学长在搭自己的博客，然后兴趣使来，就也想整一个简单的个人博客，然后由于种种原因，这个过程进行的并不是那么的顺利，于是就有了这篇博客，借此记录也希望观者能顺利的搭建属于自己的个人博客。（PS：今天刚整明白搭博客，还没搞明白图片的插入以及美化排版啥的，先将就着看看hh）">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-06-05T13:30:54.000Z">
-<meta property="article:modified_time" content="2020-06-06T00:25:00.745Z">
+<meta property="article:modified_time" content="2020-06-06T06:26:10.988Z">
 <meta property="article:author" content="Lzy">
 <meta name="twitter:card" content="summary">
   
@@ -98,7 +98,7 @@
 <h2 id="二、搭建Hexo"><a href="#二、搭建Hexo" class="headerlink" title="二、搭建Hexo"></a>二、搭建Hexo</h2><p>　　Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Coding上，是搭建博客的首选框架。在Hexo上面有许多现成的个人博客网站模板，安装部署完成后我们可以直接使用，也可以对其进行个性化的改造。Hexo的搭建步骤相比Github的操作复杂了许多，也就是它让我摸索了很长时间，然后可能是由于版本更新，导致网上的老教程都不太靠谱（至少对我来说挺坑的…），然后下面来详细介绍一下搭建步骤，建议在安装过程中关闭杀毒软件，因为会导致某些操作无法成功：</p>
 <p>1.安装Git<br>2.安装Nodejs<br>3.安装Hexo</p>
 <h4 id="1-安装Git"><a href="#1-安装Git" class="headerlink" title="1.安装Git"></a>1.安装Git</h4><p>　　到官网下载Git<a href="https://git-scm.com/downloads" target="_blank" rel="noopener">https://git-scm.com/downloads</a>.安装的时候一路点击Next就行，因为我也不知道都是些啥…反正默认就对了hh</p>
-<h4 id="2-安装Nodejs"><a href="#2-安装Nodejs" class="headerlink" title="2.安装Nodejs"></a>2.安装Nodejs</h4><p>　　这玩意和第三步的网上教程坑死我了…　whatever，首先还是先去官网把它下载下来<a href="https://nodejs.org/zh-cn/" target="_blank" rel="noopener">https://nodejs.org/zh-cn/</a>.然后安装为了防止后面出现乱七八糟的错误还是推荐默认选项，安装位置它要c盘就c盘吧，c盘应该也不缺这么点空间。<br>　　安装完成后，键盘同时按住（WIN+R）呼出运行，输入cmd运行命令提示符，然后输入node -v，如果正常显示版本号既nodejs安装成功，再输入npm -v，同理显示版本号即可。关于npm，npm的作用就是对Node.js依赖的包进行管理，也可以理解为用来安装/卸载Node.js需要装的东西，新版的nodejs自带npm，安装时两者一起安装。<br>　　到此剩下的步骤就是和网上的教程区别最大的地方，根据我一下午的尝试，安装时nodejs会自动在D盘创建一个叫NodeJS的文件夹，里面包括node_global和node_cache这两个子文件夹，（而如果按照网上的教程这两个文件夹需要你自己可选创建，然后还要设置一堆乱七八糟的东西），接下来我们需要设置电脑的环境变量，基本步骤是右键计算机，选择属性，选择左边的高级系统设置，选择环境变量。这里我们应该是需要设置两个地方就行，第一个是上面的用户变量，双击path进入编辑，将带AppData\Roaming\npm的这一行删除，替换为D:\NodeJS\node_global，点击确定即可，第二个是下面的系统变量，新建一个[NODE_PATH]，下面那行输入[D:\Develop\nodejs\node_global\node_modules]，点击确定即可。</p>
+<h4 id="2-安装Nodejs"><a href="#2-安装Nodejs" class="headerlink" title="2.安装Nodejs"></a>2.安装Nodejs</h4><p>　　这玩意和第三步的网上教程坑死我了…　whatever，首先还是先去官网把它下载下来<a href="https://nodejs.org/zh-cn/" target="_blank" rel="noopener">https://nodejs.org/zh-cn/</a>.然后安装为了防止后面出现乱七八糟的错误还是推荐默认选项，安装位置它要c盘就c盘吧，c盘应该也不缺这么点空间。<br>　　安装完成后，键盘同时按住（WIN+R）呼出运行，输入cmd运行命令提示符，然后输入node -v，如果正常显示版本号既nodejs安装成功，再输入npm -v，同理显示版本号即可。关于npm，npm的作用就是对Node.js依赖的包进行管理，也可以理解为用来安装/卸载Node.js需要装的东西，新版的nodejs自带npm，安装时两者一起安装。<br>　　到此剩下的步骤就是和网上的教程区别最大的地方，根据我一下午的尝试，安装时nodejs会自动在D盘创建一个叫NodeJS的文件夹，里面包括node_global和node_cache这两个子文件夹，（而如果按照网上的教程这两个文件夹需要你自己可选创建，然后还要设置一堆乱七八糟的东西），接下来我们需要设置电脑的环境变量，基本步骤是右键计算机，选择属性，选择左边的高级系统设置，选择环境变量。这里我们应该是需要设置两个地方就行，第一个是上面的用户变量，双击path进入编辑，将带AppData\Roaming\npm的这一行删除，替换为D:\NodeJS\node_global，点击确定即可，第二个是下面的系统变量，新建一个NODE_PATH，然后在下面那行输入D:\NodeJS\node_global\node_modules，点击确定即可。</p>
 <h4 id="3-安装Hexo"><a href="#3-安装Hexo" class="headerlink" title="3.安装Hexo"></a>3.安装Hexo</h4><p>　　鼠标右键点击桌面，如果Git安装成功的话右键菜单中会多出两个选项，选择其中的Git Bash，然后再出现的窗口中输入npm install hexo-cli -g，敲回车，然后在电脑的某个地方新建一个名为hexo的文件夹（名字和位置都随意），但是由于这个文件夹将来就作为你存放网站相关代码的地方，所以最好不要随便放。右键这个文件夹，同样选择Git Bash，输入hexo init，回车，hexo会自动下载一些文件到这个目录，然后我们再打开电脑的环境变量，在下面的系统变量中找到path，双击进入，添加新的一行内容为D:\NodeJS\node_global\node_modules\hexo\bin，然后我们可以在hexo中输入hexo -v，查看版本号同上，然后我们可以输入hexo -g，回车，再输入hexo -s，回车，执行以上命令之后打开浏览器访问 <a href="http://localhost:4000" target="_blank" rel="noopener">http://localhost:4000</a> 即可看到hexo为我们提供的默认页面。</p>
 <h2 id="三、将我们的个人博客上传到Github"><a href="#三、将我们的个人博客上传到Github" class="headerlink" title="三、将我们的个人博客上传到Github"></a>三、将我们的个人博客上传到Github</h2><p>　　此时我们的博客还是存放在本地的，我们如果想能通过我们在第一步获取到的域名访问到该博客，还需将其上传到Github，如果你一切都配置好了，发布上传很容易，在Git Bash中一句hexo d就搞定了，当然关键还是你要把所有东西配置好。<br>　　首先我们需要配置ssh Key，在Git Bash中输入cd ~/.ssh，如果提示：No such file or directory 说明我们是第一次使用Git，表示正常，然后我们再输入$ ssh-keygen -t rsa -C “你在Github上注册时使用的邮箱地址”，然后git会输出：</p>
 <p>Generating public/private rsa key pair.<br>Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):</p>
@@ -115,7 +115,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/" data-id="ckb32slz20000i0us0ryj05qe" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/" data-id="ckb39ar7x0001sgus0pc455jw" class="article-share-link">Share</a>
       
       
     </footer>
