@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>XCTF系列 // Web ez题 Writeup | 正当年少</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言：　　最近注册了攻防世界的账号，so 先把 WEB 的简单题做了熟悉一下平台操作，借此博客整理记录一下 EZ 题中相对较难的一些题目的题解和相关知识点。 本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XCTF系列 &#x2F;&#x2F; Web ez题 Writeup">
+<meta property="og:url" content="http://yoursite.com/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/index.html">
+<meta property="og:site_name" content="正当年少">
+<meta property="og:description" content="前言：　　最近注册了攻防世界的账号，so 先把 WEB 的简单题做了熟悉一下平台操作，借此博客整理记录一下 EZ 题中相对较难的一些题目的题解和相关知识点。 本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200708161959733.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200708164328562.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200708171451704.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200708171809337.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200708172158906.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200709144513998.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200709234703159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200711121555691.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-07-11T05:09:29.000Z">
+<meta property="article:modified_time" content="2020-07-11T05:49:28.968Z">
+<meta property="article:author" content="Lzy">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200708161959733.png">
+  
+    <link rel="alternate" href="/atom.xml" title="正当年少" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">正当年少</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-XCTF系列-Web-ez题-Writeup" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/" class="article-date">
+  <time datetime="2020-07-11T05:09:29.000Z" itemprop="datePublished">2020-07-11</time>
+  
+        <!-- 不蒜子统计 -->
+        <i class="icon-smile icon"></i> 文章阅读量<span id="busuanzi_value_page_pv"></span>次
+
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      XCTF系列 // Web ez题 Writeup
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>　　最近注册了攻防世界的账号，so 先把 WEB 的简单题做了熟悉一下平台操作，借此博客整理记录一下 EZ 题中相对较难的一些题目的题解和相关知识点。</p>
+<h5 id="本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞"><a href="#本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞" class="headerlink" title="本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞"></a>本文涉及的部分知识点：PHP弱类型比较、命令执行漏洞</h5><a id="more"></a>
+<h3 id="1-robots"><a href="#1-robots" class="headerlink" title="1` robots"></a>1` robots</h3><p>　　robots 协议也叫 robots.txt 是一种存放于网站根目录下的ASCII编码的文本文件，它用来告知搜索引擎（或网络爬虫）哪些内容能被抓取，哪些内容不能被抓取。因为一些系统中的URL是大小写敏感的，所以 robots.txt 的文件名应统一为小写。<br>　　进入本题场景，网页中什么内容也没有，不过没有关系，既然题目为 robots ，故可以先访问 robots.txt 看看。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200708161959733.png" alt="在这里插入图片描述"><br>　　在该页面可以看到明显的提示，故直接访问 f1ag_1s_h3re.php 页面就可以得到flag。</p>
+<h3 id="2-backup"><a href="#2-backup" class="headerlink" title="2` backup"></a>2` backup</h3><p>　　本题题目描述中给出了 “备份文件” 这个信息，由此想到相关后缀名应为.bak。既然题目要求访问 index.php 的备份文件，故访问 index.php.bak 浏览器即可下载得到该文件。用Sublime打开该文件，即可得到flag。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200708164328562.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="3-weak-auth"><a href="#3-weak-auth" class="headerlink" title="3` weak_auth"></a>3` weak_auth</h3><p>　　打开本题网页，发现需要登录，在该页面没有发现什么线索，所以先随便输入一个账号密码试试。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200708171451704.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>　　可以看到，网站弹出提示，要求我们使用 admin 的用户名来登录，同时我们可以查看该页面的源码，发现提示，建议使用字典来爆破密码。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200708171809337.png" alt="在这里插入图片描述"><br>　　因此，使用 Burpsuite 爆破密码即可得到 flag。（这题使用 Burpsuite 自带的字典不太好用。。。在这里贴一个还算比较全的字典吧：<a href="https://github.com/rootphantomer/Blasting_dictionary" target="_blank" rel="noopener">https://github.com/rootphantomer/Blasting_dictionary</a>）</p>
+<p><img src="https://img-blog.csdnimg.cn/20200708172158906.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="4-simple-php"><a href="#4-simple-php" class="headerlink" title="4` simple_php"></a>4` simple_php</h3><p>　　本题浏览源码可知，考察点在于 PHP 的弱类型比较。故按照题目要求，构造 a=a，b=1235a 即可得到flag。</p>
+<h5 id="在这里总结记录一下碰到过的-PHP-弱类型比较。"><a href="#在这里总结记录一下碰到过的-PHP-弱类型比较。" class="headerlink" title="在这里总结记录一下碰到过的 PHP 弱类型比较。"></a>在这里总结记录一下碰到过的 PHP 弱类型比较。</h5><p>　　首先介绍一下相关概念，HTML 表单并不传递整数、浮点数或者布尔值，它们只传递字符串。要想检测一个字符串是不是数字，可以使用 is_numeric() 函数。在 PHP 中有两种比较是否相等的符号 == 与 === 。<br>　　等于 == ，当等号两边为相同类型时，直接比较值是否相等，当等号两边类型不同时，先转换为相同的类型，再对转换后的值进行比较。<br>　　全等 === ，在进行比较的时候，首先判断等号两边的类型是否相等，如果不同，则直接返回 false，如果相同，再进行比较值是否相等。<br>　　举一个简单的例子，变量a为数字1，变量b为字符’1’，在 PHP 中，$a == $b 会返回 true ，而 $a === $b 则会返回 false。<br>　<br>　　当字符串与数字比较时，首先将字符串转换为数字，不能转换为数字的字符串或 NULL ，被转换为0。例如， “abc” 是不能转换为数字的字符串，而 “123” 、”123a” 、”0x12” 或 “2e3” 是可以转换为数字的字符串。PHP 手册中相关描述如下：<br>　　<strong>如果比较一个数字和字符串或者比较涉及到数字内容的字符串，则字符串会被转换为数值并且比较按照数值来进行。</strong><br>　　一个字符串的开始部分决定了它转化成数值后的值，如果该字符串以合法的数值开始，则使用该数值，否则其值为0。　<br>　　<strong>在进行比较运算时，如果遇到了 “ 0e\d+ “ 这种字符串，PHP 就会将这种字符串解析为科学计数法。</strong></p>
+<table>
+<thead>
+<tr>
+<th>例子</th>
+<th>字符串转化后的数值</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“admin”==0</td>
+<td>0</td>
+<td>true</td>
+</tr>
+<tr>
+<td>“1admin”==1</td>
+<td>1</td>
+<td>true</td>
+</tr>
+<tr>
+<td>“admin1”==1</td>
+<td>0</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“0e123456”==”0e456789”</td>
+<td>0，字符串解析为科学计数法</td>
+<td>true</td>
+</tr>
+<tr>
+<td>“0e123456a”==”0e456789a”</td>
+<td>字符串与字符串类型直接比较，无转换</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“1e3b31”==1000</td>
+<td>1000</td>
+<td>true</td>
+</tr>
+<tr>
+<td>“2e3”==2000</td>
+<td>2000</td>
+<td>true</td>
+</tr>
+<tr>
+<td>“2E3”==2</td>
+<td>2000</td>
+<td>false</td>
+</tr>
+<tr>
+<td>“0x12”==0</td>
+<td>0</td>
+<td>true</td>
+</tr>
+<tr>
+<td>0x12==18</td>
+<td>—</td>
+<td>true</td>
+</tr>
+</tbody></table>
+<p>　　MD5绕过就是以上知识的一种实际应用，举个例子，假如我们需要找到两个字符串，它们不相等，但是md5的值却 弱相等，这种字符串要怎么找呢，一种方法是我们只需要找到对应md5的值都以0e开头后接数字的两个字符串即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">例如：</span><br><span class="line">md5(&quot;s878926199a&quot;)&#x3D;&#x3D;md5(&quot;s155964671a&quot;)为 true。</span><br><span class="line">md5(&quot;s878926199a&quot;)为 &quot;0e545993274517709034328855841020&quot;;</span><br><span class="line">md5(&quot;s155964671a&quot;)为 &quot;0e342768416822451524974117254469&quot;;</span><br><span class="line">两个字符串均为&quot;0e\d+&quot;格式，均被解析为科学计数法，数值都等于0。</span><br></pre></td></tr></table></figure>
+<p>　　其它比较运算与等于类似，在这里附上 PHP 手册中相关内容的地址：<br>　　<a href="https://www.php.net/manual/zh/types.comparisons.php" target="_blank" rel="noopener">PHP：PHP 类型比较表</a><br>　　<a href="https://www.php.net/manual/zh/language.operators.comparison.php" target="_blank" rel="noopener">PHP：比较运算符</a></p>
+<h3 id="5-xff-referer"><a href="#5-xff-referer" class="headerlink" title="5` xff_referer"></a>5` xff_referer</h3><p>　　根据题目信息可知，本题与 <em>X-Forwarded-For</em> 和 <em>Referer</em> 有关。进入网页，发现题目要求登录ip地址必须为123.123.123.123，于是使用 Burpsuite 进行抓包，在请求头添加一项 <code>X-Forwarded-For:123.123.123.123</code> 后重发，发现如下回显：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200709144513998.png" alt="在这里插入图片描述"><br>　　既然题目要求请求必须来自谷歌，于是再在请求头中添加一项 <code>referer:https://www.google.com</code> 后重发即可，在网页响应中即可看到 flag。</p>
+<h6 id="X-Forwarded-For："><a href="#X-Forwarded-For：" class="headerlink" title="X-Forwarded-For："></a>X-Forwarded-For：</h6><p>简称XFF头，它代表客户端，也就是 HTTP 的请求端真实的IP，换句话说，XFF头就是告诉服务器当前请求者的IP地址的 HTTP 请求头字段。它的标准格式为 <em>X-Forwarded-For: client1, proxy1, proxy2</em> ，从标准格式可以看出，XFF头信息可以有多个，中间用逗号分隔，第一项为真实的客户端ip，剩下的就是曾经经过的代理或负载均衡的ip地址，经过几个就会出现几个。</p>
+<h6 id="Referer："><a href="#Referer：" class="headerlink" title="Referer："></a>Referer：</h6><p>HTTP Referer是 header 的一部分，当浏览器向 WEB 服务器发送请求的时候，一般会带上 Referer ，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p>
+<h3 id="6-command-execution"><a href="#6-command-execution" class="headerlink" title="6` command_execution"></a>6` command_execution</h3><p>　　本题的考察点为命令执行漏洞。当应用需要调用一些外部程序去处理内容的情况下，就会用到一些执行系统命令的函数。如 PHP 中的 system、exec、shell_exec 等，当用户可以控制命令执行函数中的参数时，将可以注入恶意系统命令到正常命令中，造成命令执行攻击。<br>　　进入本题网页，首先试试输入127.0.0.1来观察一下回显。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200709234703159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>　　这里涉及到另外一个知识点，即如何从PING命令的回显来判断操作系统的类型。<strong>一般来说，我们可以通过查看TTL值从而判断操作系统类型</strong>。确定目标系统后，即可使用对应系统的相关系统命令来寻找 flag。</p>
+<ul>
+<li>TTL=128，这是 <em>WINNT/2K/XP</em>。</li>
+<li>TTL=32，这是 <em>WIN95/98/ME</em>。</li>
+<li>TTL=256，这是 <em>UNIX</em>。</li>
+<li>TTL=64，这是 <em>LINUX</em>。</li>
+</ul>
+<p>　　本题目标系统为 LINUX，因此我们可以使用 LINUX 的查找命令以 flag 为关键词试试搜索相关文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find &#x2F; -name &quot;flag*&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>关于 LINUX 的常用系统命令可参考以下博客</strong>：<a href="https://blog.csdn.net/qq_23853743/article/details/84037598" target="_blank" rel="noopener">Linux系统常用基本命令总结</a><br><strong>关于 WINDOWS 的常用系统命令可参考以下博客</strong>：<a href="https://blog.csdn.net/qq_23994787/article/details/79498299" target="_blank" rel="noopener">windows系统常用命令</a></p>
+<p><img src="https://img-blog.csdnimg.cn/20200711121555691.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>　　可以发现题目没有对用户输入的参数进行过滤，在回显中我们可以明显的看到 flag 文件的路径，接下来使用 cat 命令显示该文件内容即可得到 flag。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat &#x2F;home&#x2F;flag.txt</span><br></pre></td></tr></table></figure>
+<p>　　本题题目把用户输入的参数不经过过滤直接放在 PING 命令之后，因此攻击者可以在输入的参数后用连接符截断再加上新的系统命令，进而执行该新命令。</p>
+<p><strong>常见的 LINUX 命令间的连接符如下</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>连接符</th>
+<th>举例</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>;</td>
+<td>A;B</td>
+<td>按顺序依次执行，先执行命令A，再执行命令B</td>
+</tr>
+<tr>
+<td>|</td>
+<td>A|B</td>
+<td>管道符，命令A执行成功后，命令A的输出会交给命令B继续处理。若命令A执行失败，则会报错，若命令B无法处理命令A的输出，也会报错。</td>
+</tr>
+<tr>
+<td>&amp;&amp;</td>
+<td>A&amp;&amp;B</td>
+<td>逻辑与关系，命令A执行成功后，才会执行命令B；命令A执行失败，则命令B不被执行。</td>
+</tr>
+<tr>
+<td>||</td>
+<td>A||B</td>
+<td>逻辑或关系，命令A执行失败后，才会执行命令B；命令A执行成功，则命令B不被执行</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/" data-id="ckch8thju00018wuse0c43bm9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/06/17/Web%E5%AE%89%E5%85%A8-CSRF(%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Web安全 // CSRF(跨站请求伪造)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/">XCTF系列 // Web ez题 Writeup</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/17/Web%E5%AE%89%E5%85%A8-CSRF(%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)/">Web安全 // CSRF(跨站请求伪造)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/12/Web%E5%AE%89%E5%85%A8-%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/">Web安全 // 一句话木马</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用 hexo + github 搭建免费个人博客教程</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/05/welcome-to-my-blog/">Welcome To My Blog</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      
+<!-- require APlayer -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+<!--使用-->
+<div>
+<meting-js 
+	server="netease" 
+	type="playlist" 
+	id="5060904263"
+	fixed="true" 
+	autoplay="true"
+	loop="all"
+	order="random"
+	preload="auto"
+	list-folded="ture"
+	lrc-type="0"
+  volume=0.3
+	list-max-height="400px">
+</meting-js>
+</div>
+
+<footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Lzy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      
+        <!-- 不蒜子统计 -->
+        本站访问量 <span id="busuanzi_value_site_pv"></span> 次
+        <span class="post-meta-divider">|</span>
+        本站访客数 <span id="busuanzi_value_site_uv"></span> 人
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

