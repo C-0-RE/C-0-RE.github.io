@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>XCTF系列 // Web | unserialize3 | 正当年少</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言　　本题涉及到的知识点主要有，PHP 对象的序列化与反序列化 以及在反序列化中的 __wakeup() 函数漏洞。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XCTF系列 &#x2F;&#x2F; Web | unserialize3">
+<meta property="og:url" content="http://yoursite.com/2020/07/23/XCTF%E7%B3%BB%E5%88%97-Web-unserialize3/index.html">
+<meta property="og:site_name" content="正当年少">
+<meta property="og:description" content="前言　　本题涉及到的知识点主要有，PHP 对象的序列化与反序列化 以及在反序列化中的 __wakeup() 函数漏洞。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200723183630989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020072318591484.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200723191029881.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200723191008306.png">
+<meta property="article:published_time" content="2020-07-23T11:26:37.000Z">
+<meta property="article:modified_time" content="2020-07-23T12:02:21.063Z">
+<meta property="article:author" content="Lzy">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200723183630989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+  
+    <link rel="alternate" href="/atom.xml" title="正当年少" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">正当年少</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-XCTF系列-Web-unserialize3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/23/XCTF%E7%B3%BB%E5%88%97-Web-unserialize3/" class="article-date">
+  <time datetime="2020-07-23T11:26:37.000Z" itemprop="datePublished">2020-07-23</time>
+  
+        <!-- 不蒜子统计 -->
+        <i class="icon-smile icon"></i> 文章阅读量<span id="busuanzi_value_page_pv"></span>次
+
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      XCTF系列 // Web | unserialize3
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>　　本题涉及到的知识点主要有，<strong><em>PHP 对象的序列化与反序列化</em></strong> 以及在反序列化中的 <strong><em>__wakeup() 函数漏洞</em></strong>。</p>
+<a id="more"></a>
+<h3 id="PHP-对象序列化与反序列化"><a href="#PHP-对象序列化与反序列化" class="headerlink" title="PHP 对象序列化与反序列化"></a>PHP 对象序列化与反序列化</h3><p>　　所有 PHP 里面的值都可以使用函数 <code>serialize()</code> 来返回一个包含字节流的字符串来表示。函数 <code>unserialize()</code> 能够把字符串重新变回 PHP 原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。为了能够 unserialize() 一个对象，这个对象的类必须已经定义过。<br>　　如果序列化类A的一个对象，将会返回一个跟类A相关，而且包含了对象所有变量值的字符串。 如果要想在另外一个文件中解序列化一个对象，这个对象的类必须在解序列化之前定义，可以通过包含一个定义该类的文件或使用函数 <code>spl_autoload_register()</code> 来实现。</p>
+<h3 id="函数-sleep-和-wakeup"><a href="#函数-sleep-和-wakeup" class="headerlink" title="函数 __sleep() 和 __wakeup()"></a>函数 __sleep() 和 __wakeup()</h3><p>　　这两个函数均为 PHP 中的魔术方法。serialize() 函数会检查类中是否存在一个 <code>__sleep()</code> 方法，如果存在，该方法会先被调用，然后才执行序列化操作。此功能可以用于清理对象，并返回一个包含对象中所有应被序列化的变量名称的数组。如果该方法未返回任何内容，则 NULL 被序列化，并产生一个 E_NOTICE 级别的错误。__sleep() 方法常用于提交未提交的数据，或类似的清理操作。同时，如果有一些很大的对象，但不需要全部保存，这个功能就很好用。<br>　　与之相反，unserialize() 函数会检查是否存在一个 <code>__wakeup()</code> 方法。如果存在，则会先调用 __wakeup() 方法，预先准备对象需要的资源。<code>__wakeup()</code> 经常用在反序列化操作中，例如重新建立数据库连接，或执行其它初始化操作。</p>
+<h3 id="PHP反序列化漏洞"><a href="#PHP反序列化漏洞" class="headerlink" title="PHP反序列化漏洞"></a>PHP反序列化漏洞</h3><p>　　该漏洞的主要原理为，__wakeup() 函数触发于 unserilize() 函数调用之前，当序列化字符串中<strong>表示对象属性个数的值大于真实个数的属性时就会导致反序列化失败同时使得 __wakeup() 函数失效</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">序列化返回的字符串格式：</span><br><span class="line">O:&lt;length&gt;:&quot;&lt;class name&gt;&quot;:&lt;n&gt;:&#123;&lt;field name 1&gt;&lt;field value 1&gt;...&lt;field name n&gt;&lt;field value n&gt;&#125; </span><br><span class="line"></span><br><span class="line">O:表示被序列化的是对象，除了o，该处还可以为: a表示数组、s表示字符、i表示数字</span><br><span class="line">&lt; length&gt;:表示序列化的类名称长度</span><br><span class="line">&lt; class name&gt;：表示序列化的类的名称</span><br><span class="line">&lt; n &gt;:表示被序列化的对象的属性个数		&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;&#x2F;</span><br><span class="line">&lt; field name 1&gt;：属性名</span><br><span class="line">&lt; field value 1&gt;：属性值</span><br></pre></td></tr></table></figure>
+<h3 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h3><p>　　进入网页，观察到题目所给代码中存在 __wakeup() 函数，同时结合本题题目为 unserialize3 可知，本题考察点应该为 PHP 反序列化及 __wakeup() 函数漏洞。</p>
+<p>　　<img src="https://img-blog.csdnimg.cn/20200723183630989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>　　既然题目要反序列化，肯定首先要有一个序列化的字符串。由于题目代码中只给了我们一个类，并没有给出一个明显的序列化字符串，故可尝试编写程序，先将该类实例化一个对象，再将该对象序列化，进而得到该字符串。</p>
+<p>　　<img src="https://img-blog.csdnimg.cn/2020072318591484.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>　　得到的字符串如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:4:&quot;xctf&quot;:1:&#123;s:4:&quot;flag&quot;;s:3:&quot;111&quot;;&#125;</span><br></pre></td></tr></table></figure>
+<p>　　观察题目剩余部分，可以看到题目给出提示，我们应该使用 ?code= 来进行传参。<br>　　同时我们需要利用 PHP 反序列化漏洞来绕过 __wakeup() 函数，如果不绕过 __wakeup() 方法，那么将会输出”bad requests”并退出脚本。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200723191029881.png" alt="在这里插入图片描述"><br>　　综上，我们应该将上述的序列化的字符串中的对象属性个数由真实值1修改为任意大于1的数，然后将其传给 code 即可得到 flag。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200723191008306.png" alt="在这里插入图片描述"><br>本题相关知识点在 PHP 手册中的描述及详解如下：<br><a href="https://www.php.net/manual/zh/language.oop5.serialization.php" target="_blank" rel="noopener">PHP:对象序列化</a><br><a href="https://www.php.net/manual/zh/language.oop5.magic.php#object.wakeup" target="_blank" rel="noopener">PHP:魔术方法</a></p>
+<p>PS. <a href="https://www.php.cn/php-weizijiaocheng-415420.html" target="_blank" rel="noopener">关于 PHP 中访问修饰符( public、private 和 protected )的相关知识点可参考该链接</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/07/23/XCTF%E7%B3%BB%E5%88%97-Web-unserialize3/" data-id="ckcyqydgf0002esusay3l131e" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">XCTF系列 // Web ez题 Writeup</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/07/23/XCTF%E7%B3%BB%E5%88%97-Web-unserialize3/">XCTF系列 // Web | unserialize3</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/">XCTF系列 // Web ez题 Writeup</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/17/Web%E5%AE%89%E5%85%A8-CSRF(%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)/">Web安全 // CSRF(跨站请求伪造)</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/12/Web%E5%AE%89%E5%85%A8-%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/">Web安全 // 一句话木马</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/05/%E4%BD%BF%E7%94%A8-hexo-github-%E6%90%AD%E5%BB%BA%E5%85%8D%E8%B4%B9%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%95%99%E7%A8%8B/">使用 hexo + github 搭建免费个人博客教程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      
+<!-- require APlayer -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+<!--使用-->
+<div>
+<meting-js 
+	server="netease" 
+	type="playlist" 
+	id="5060904263"
+	fixed="true" 
+	autoplay="true"
+	loop="all"
+	order="random"
+	preload="auto"
+	list-folded="ture"
+	lrc-type="0"
+  volume=0.2
+	list-max-height="400px">
+</meting-js>
+</div>
+
+<footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Lzy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      
+        <!-- 不蒜子统计 -->
+        本站访问量 <span id="busuanzi_value_site_pv"></span> 次
+        <span class="post-meta-divider">|</span>
+        本站访客数 <span id="busuanzi_value_site_uv"></span> 人
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
