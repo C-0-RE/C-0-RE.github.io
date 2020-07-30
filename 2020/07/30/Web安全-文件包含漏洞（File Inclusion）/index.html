@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Web安全 // 文件包含漏洞（File Inclusion） | 正当年少</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言这周第一次尝试了正经的 CTF 比赛， 虽然吧一题也没做出来  ，但总归也是有所收获。路漫漫其修远兮，吾将上下而求索。Go Fight !">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web安全 &#x2F;&#x2F; 文件包含漏洞（File Inclusion）">
+<meta property="og:url" content="http://yoursite.com/2020/07/30/Web%E5%AE%89%E5%85%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%EF%BC%88File%20Inclusion%EF%BC%89/index.html">
+<meta property="og:site_name" content="正当年少">
+<meta property="og:description" content="前言这周第一次尝试了正经的 CTF 比赛， 虽然吧一题也没做出来  ，但总归也是有所收获。路漫漫其修远兮，吾将上下而求索。Go Fight !">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730102548466.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730105800388.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730121905846.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730123301329.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730123352102.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730125341646.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730133358343.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730133602323.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730134803486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730170501487.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730172059834.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730172121793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730172912920.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730173015509.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730173038454.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730193451744.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730195155529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730202027357.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730202054423.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730203320370.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200730204926696.png">
+<meta property="article:published_time" content="2020-07-30T13:09:34.000Z">
+<meta property="article:modified_time" content="2020-07-30T13:17:18.010Z">
+<meta property="article:author" content="Lzy">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200730102548466.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70">
+  
+    <link rel="alternate" href="/atom.xml" title="正当年少" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">正当年少</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Web安全-文件包含漏洞（File Inclusion）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/07/30/Web%E5%AE%89%E5%85%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%EF%BC%88File%20Inclusion%EF%BC%89/" class="article-date">
+  <time datetime="2020-07-30T13:09:34.000Z" itemprop="datePublished">2020-07-30</time>
+  
+        <!-- 不蒜子统计 -->
+        <i class="icon-smile icon"></i> 文章阅读量<span id="busuanzi_value_page_pv"></span>次
+
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Web安全 // 文件包含漏洞（File Inclusion）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这周第一次尝试了正经的 CTF 比赛， <del>虽然吧一题也没做出来</del>  ，但总归也是有所收获。<br>路漫漫其修远兮，吾将上下而求索。Go Fight !</p>
+<a id="more"></a>
+<h3 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h3><p>文件包含，简单来说就是开发人员在开发中为了方便以及提高代码的重用性和灵活性，会将在多个地方重复使用到的代码或者函数等单独写到一个文件中，在需要用到的地方直接调用此文件，而无需重复编写，包含后的文件即相当于将被包含的整个文件内容复制到了包含处。<br><strong>当 PHP 包含一个文件时，会将该文件当做 PHP 代码执行，而不会在意文件时什么类型。</strong>
+　　</p>
+<h3 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h3><p>程序开发人员一般希望代码更灵活，所以往往将被包含的文件设置为变量，用来进行动态调用，但正是由于这种灵活性，使得客户端可以控制变量的值，如果服务器端未对变量值进行合理地校验或者校验被绕过，那么就会导致文件包含漏洞。通常文件包含漏洞出现在 PHP 语言中。</p>
+<h3 id="PHP-中文件包含的函数"><a href="#PHP-中文件包含的函数" class="headerlink" title="PHP 中文件包含的函数"></a>PHP 中文件包含的函数</h3><ul>
+<li>include()<br>当使用该函数包含文件时，只有代码执行到 <code>include()</code> 函数时才将文件包含进来，发生错误时只给出一个警告，继续向下执行。</li>
+<li>include_once()<br><code>include_once()</code> 语句和 <code>include()</code> 语句类似，唯一区别是如果该文件已经被包含过，则不会再次包含。如同此语句名字暗示的那样，只会包含一次。<br><code>include_once()</code> 可以用于在脚本执行期间同一个文件有可能被包含超过一次的情况下，想确保它只被包含一次以避免函数重定义，变量重新赋值等问题。</li>
+<li>require()<br>除了处理失败的方式不同之外，<code>require()</code> 和 <code>include()</code> 几乎完全一样。<code>require()</code> 在出错时产生 (E_COMPILE_ERROR) 级别的错误，换句话说将导致脚本中止。而 <code>include()</code> 只产生警告 (E_WARNING)，脚本会继续运行。</li>
+<li>require_once()<br><code>require_once()</code> 语句和 <code>require()</code> 语句完全相同，唯一区别是 PHP 会检查该文件是否已经被包含过，如果是则不会再次包含。 _once 的含义与 include_once() 相同。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730102548466.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>PHP 文档中相关内容可查看链接：<a href="https://www.php.net/manual/zh/function.include.php" target="_blank" rel="noopener">PHP：include</a> 及 <a href="https://www.php.net/manual/zh/function.include-once.php" target="_blank" rel="noopener">PHP：include_once</a></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730105800388.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>文件包含漏洞可分为两类，本地文件包含与远程文件包含。它们的原理是相同的，不同点就是前者只能包含服务器内存在的文件，后者则可包含远程服务器内的文件。</p>
+<h3 id="本地文件包含漏洞"><a href="#本地文件包含漏洞" class="headerlink" title="本地文件包含漏洞"></a>本地文件包含漏洞</h3><p>本地文件包含，Local File Inclusion，LFI。当包含的文件在服务器本地时，就形成了本地文件包含。</p>
+<p>下面做个简单的测试来直观描述一下，在包含值可被直接控制的情况下是怎么样的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">网页源码很简单如下，file_include.php：</span><br><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">$file &#x3D; isset($_GET[&quot;page&quot;])?$_GET[&quot;page&quot;]:&#39;homepage.php&#39;;</span><br><span class="line">include($file);</span><br><span class="line"></span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200730121905846.png" alt="在这里插入图片描述"><br>为了更加方便直观，我们可以在网页源码目录下随便新建几个不同类型的文件以供测试，结果如下。</p>
+<p>PS:文件包含可以包含任意文件，即便被包含的文件并不是与当前编程语言相关，甚至为图片，只要文件被包含，其内容就会被包含文件所包含，并以当前服务器脚本语言执行。如果包含的文件内容不符合当前脚本语言语法的，会直接将文件内容输出。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200730123301329.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730123352102.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>当然，可以包含的文件肯定不只局限于该目录下，例如，我们可以读取系统配置文件 <code>C:\WINDOWS\system.ini</code>，and so on.</p>
+<p><img src="https://img-blog.csdnimg.cn/20200730125341646.png" alt="在这里插入图片描述"><br>在上面所举的例子中，服务器端没有对动态调用的变量值进行任何的过滤，即用户可以随意控制变量的值，这种情况在现实中应该是不太可能出现的。那么如果开发者在开发中就限制了所能包含的文件的后缀名的话，又要如何绕过呢。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">例如，可以将先前的源码稍作修改如下:</span><br><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">$file &#x3D; isset($_GET[&quot;page&quot;])?($_GET[&quot;page&quot;] . &#39;.php&#39;):&#39;homepage.php&#39;;</span><br><span class="line">include($file);</span><br><span class="line"></span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20200730133358343.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730133602323.png" alt="在这里插入图片描述"><br>可以看到，现在我们只能包含指定后缀名的文件。But don’t worry，我们可以使用 <code>%00</code> 截断的方式来进行绕过。<br>但是使用该方法有一些前提条件，如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200730134803486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>由于本人安装的 PHP 版本大于5.3，要实操一遍挺麻烦的，，，So，这里就直接附上相关博客来说明该方法了。<br><a href="http://www.bugsafe.cn/archives/167.html" target="_blank" rel="noopener">谈一谈文件包含漏洞</a> 或 <a href="https://www.jianshu.com/p/3514f0fd79f7" target="_blank" rel="noopener">文件包含漏洞学习总结</a></p>
+<h3 id="远程文件包含漏洞"><a href="#远程文件包含漏洞" class="headerlink" title="远程文件包含漏洞"></a>远程文件包含漏洞</h3><p>远程文件包含，Remote File Inclusion，RFI。当包含的文件在远程服务器上时，就形成了远程文件包含。</p>
+<p>要实现远程文件包含有两点需要注意：</p>
+<ol>
+<li>需要 PHP 配置文件 <code>php.ini</code> 内的 <code>allow_url_include = on</code> 以及 <code>allow_url_fopen=on</code></li>
+<li>所需要包含的远程文件的后缀格式不能与目标服务器的语言种类相同，如（目标服务器解析 PHP 代码，那么远程文件后缀格式则不能为 .php）</li>
+</ol>
+<p>由于我还没弄明白怎么整一个远程服务器的环境……所以这里又没有实操……<br>相关知识点的分析和具体操作仍可参考上述两篇博客。</p>
+<h3 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h3><p>PHP 带有很多内置 URL 风格的封装协议，这些协议常在CTF题目中与文件包含漏洞相结合。现以本文最初编写的页面为环境，来举例部分伪协议在文件包含漏洞中的应用。PHP 官方文档中相关内容的描述可查看该页面，<a href="https://www.php.net/manual/zh/wrappers.php" target="_blank" rel="noopener">PHP：支持的协议和封装协议</a></p>
+<h5 id="1-data"><a href="#1-data" class="headerlink" title="1`  data://"></a>1`  <code>data://</code></h5><p>该协议有两种使用方法，参数为需要执行的 PHP 代码。</p>
+<ul>
+<li><code>data:text/plain,需要执行的 PHP 代码</code><br><img src="https://img-blog.csdnimg.cn/20200730170501487.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></li>
+<li><code>data:text/plain;base64,需要执行的base64编码后的 PHP 代码</code><br><img src="https://img-blog.csdnimg.cn/20200730172059834.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730172121793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这里有一点需要特别注意的地方，<strong>base64编码后如果有加号需要手动的进行url编码（即将 + 替换成 %2b），否则无法识别</strong>。例如：</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200730172912920.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730173015509.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730173038454.png" alt="在这里插入图片描述"></p>
+<h5 id="2-php-input"><a href="#2-php-input" class="headerlink" title="2`  php://input"></a>2`  <code>php://input</code></h5><p>这个协议的利用方法是将需要执行的 PHP 代码写在 POST 中提交，不用键值对的形式，只写代码即可。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200730193451744.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><strong>NOTICE：</strong><br><strong>在验证该协议的使用中遇到了一些问题，暂时还不知道原因，先在此记录下来。</strong></p>
+<p>① 使用 burpsuite 抓本地包时，域名需使用本机的 IPv4 地址，如果域名使用 127.0.0.1 或者 localhost 的话无法抓取到本地包；该点可参考博客 <a href="https://blog.csdn.net/qq_43662512/article/details/99698833?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.edu_weight" target="_blank" rel="noopener">关于BurpSuite抓不到本地包的问题解决方法汇总</a></p>
+<p>② 此处不知为何无法使用火狐的 hackbar 插件来提交 POST 参数；下图左半部分内容来自博客 <a href="https://www.freebuf.com/column/148886.html" target="_blank" rel="noopener">php伪协议实现命令执行的七种姿势</a>，右半部分内容为本人验证时的操作结果。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200730195155529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="3-php-filter"><a href="#3-php-filter" class="headerlink" title="3`  php://filter"></a>3`  <code>php://filter</code></h5><p>使用该伪协议可以实现读取 PHP 文件源码并以 base64 编码格式输出的功能。<br>该功能的使用方法为<code>php://filter/read=convert.base64-encode/resource=想要读取内容的PHP文件</code> </p>
+<p><img src="https://img-blog.csdnimg.cn/20200730202027357.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200730202054423.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h5 id="4-file"><a href="#4-file" class="headerlink" title="4`  file://"></a>4`  <code>file://</code></h5><p>该协议用于访问本地文件系统。在CTF中通常用来读取本地文件，不受 <code>allow_url_fopen</code> 与 <code>allow_url_include</code> 的影响。使用方法为 <code>file://文件的绝对路径</code></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730203320370.png" alt="在这里插入图片描述"></p>
+<h5 id="5-zip"><a href="#5-zip" class="headerlink" title="5`  zip://"></a>5`  <code>zip://</code></h5><p>该协议可以访问压缩文件中的文件，和 <code>file://</code> 一样都需要传入文件的绝对路径。<br>使用方法为 <code>zip://压缩包绝对路径#压缩文件内的文件名</code> ，这里需要注意，<strong>需要手动对中间的 # 号进行url编码（即将 # 替换成 %23）</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/20200730204926696.png" alt="在这里插入图片描述"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/07/30/Web%E5%AE%89%E5%85%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%EF%BC%88File%20Inclusion%EF%BC%89/" data-id="ckd8tux080000xsus2lc05sp4" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/07/26/XCTF%E7%B3%BB%E5%88%97-Web-php_rce-&-Web_python_template_injection/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">XCTF系列 // Web | php_rce &amp; Web_python_template_injection</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/07/30/Web%E5%AE%89%E5%85%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%EF%BC%88File%20Inclusion%EF%BC%89/">Web安全 // 文件包含漏洞（File Inclusion）</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/26/XCTF%E7%B3%BB%E5%88%97-Web-php_rce-&-Web_python_template_injection/">XCTF系列 // Web | php_rce &amp; Web_python_template_injection</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/23/XCTF%E7%B3%BB%E5%88%97-Web-unserialize3/">XCTF系列 // Web | unserialize3</a>
+          </li>
+        
+          <li>
+            <a href="/2020/07/11/XCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/">XCTF系列 // Web ez题 Writeup</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/17/Web%E5%AE%89%E5%85%A8-CSRF(%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0)/">Web安全 // CSRF(跨站请求伪造)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      
+<!-- require APlayer -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+<!--使用-->
+<div>
+<meting-js 
+	server="netease" 
+	type="playlist" 
+	id="5060904263"
+	fixed="true" 
+	autoplay="true"
+	loop="all"
+	order="random"
+	preload="auto"
+	list-folded="ture"
+	lrc-type="0"
+  volume=0.2
+	list-max-height="400px">
+</meting-js>
+</div>
+
+<footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Lzy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      
+        <!-- 不蒜子统计 -->
+        本站访问量 <span id="busuanzi_value_site_pv"></span> 次
+        <span class="post-meta-divider">|</span>
+        本站访客数 <span id="busuanzi_value_site_uv"></span> 人
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
