@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>BUUCTF系列 // [SUCTF 2019] EasySQL</title>
+      <link href="/2020/09/26/BUUCTF%E7%B3%BB%E5%88%97-%5BSUCTF-2019%5D-EasySQL/"/>
+      <url>/2020/09/26/BUUCTF%E7%B3%BB%E5%88%97-%5BSUCTF-2019%5D-EasySQL/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>SQL堆叠注入 &amp; sql_mode</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目页面是熟悉的 SQL 注入界面</p><p><img src="https://img-blog.csdnimg.cn/2020092600462096.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>既然是 SQL 注入，那么还是先按照大概的流程试试基本的探测姿势</p><p><img src="https://img-blog.csdnimg.cn/20200926005021476.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200926010315617.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200926005108189.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20200926005227187.png#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2020092601114848.png#pic_center" alt="在这里插入图片描述"><br>一番尝试后，发现共有三种可能的回显，分别为 ‘Nonono.’，空以及返回 Array。并且大部分的关键字都被过滤掉了，故考虑堆叠注入</p><p>又经过一番努力，发现基本上我会的方法都被过滤掉了。。。</p><p>查了查网上的 WP，没想到口径还挺统一的，似乎是比赛时这题泄露了源码。。。题目的关键查询代码如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select $_GET[&#39;query&#39;] || flag from flag</span><br></pre></td></tr></table></figure><p>发现就算看了源码还是没啥思路（<del>捂脸</del>）， 只好从 payload 中反推一下解题的思路，payload 如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1;set sql_mode&#x3D;PIPES_AS_CONCAT;select 1</span><br></pre></td></tr></table></figure><p>把它放入题目的查询语句，拼接一下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select 1;set sql_mode&#x3D;PIPES_AS_CONCAT;select 1||flag from Flag</span><br></pre></td></tr></table></figure><h4 id="关于-sql-mode"><a href="#关于-sql-mode" class="headerlink" title="关于 sql_mode"></a>关于 sql_mode</h4><p>sql_mode 定义了 MySQL 应支持的 SQL 语法，以及应该在数据上执行何种确认检查，其中的 PIPES_AS_CONCAT 将 || 视为字符串的连接操作符而非 “或” 运算符</p><p><img src="https://img-blog.csdnimg.cn/20200926012950986.png#pic_center" alt="在这里插入图片描述"><br>大概就是未配置 sql_mode 之前，|| 是作为 或 运算符，当前面一个字段查询到数据时，后面一个字段的查询就不会再执行。当调整 sql_mode 后，|| 就相当于字符串拼接符，相当于是将前一个字段（例如：select 1 from Flag）和后一个字段（例如：select flag from Flag）的查询结果拼接在一起</p><p><img src="https://img-blog.csdnimg.cn/20200926014000318.png#pic_center" alt="在这里插入图片描述"><br><strong>PS:</strong><br>除了上述官方给出的 payload 之外，众多 WP 还提到了一个同样可以得到 flag 的非预期解 <code>*,1</code>，把它放入题目的查询语句，拼接一下就成了：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select *,1||flag from Flag</span><br><span class="line">相当于</span><br><span class="line">select *,1 from Flag</span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/2020092601404434.png#pic_center" alt="在这里插入图片描述"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> SQL注入 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>BUUCTF系列 // [极客大挑战 2019] Secret File</title>
       <link href="/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/"/>
       <url>/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/</url>
