@@ -4,6 +4,44 @@
   
     
     <entry>
+      <title>BUUCTF系列 // [极客大挑战 2019] Secret File</title>
+      <link href="/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/"/>
+      <url>/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>PHP 文件包含漏洞 &amp; 利用网页背景隐藏信息</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>进入题目页面，乍看没有什么明显的思路，查看网页源代码，发现源码中出现了部分在页面中被隐藏了的信息，这才意识到了出题者的心思</p><p><img src="https://img-blog.csdnimg.cn/20200925222323523.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>这个小技巧原理并不复杂，主要是在前端中利用网页的背景颜色来覆盖相同颜色的内容，使得相关信息肉眼不可见，初次相遇确实不易 Get 到思路，可以通过全选页面内容的方式，使所有的信息展现出来</p><p><img src="https://img-blog.csdnimg.cn/20200925224251644.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>点击隐藏信息，题目跳转到了一个新的页面</p><p><img src="https://img-blog.csdnimg.cn/20200925224150810.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>尝试点击SECRET按钮，网页再次跳转</p><p><img src="https://img-blog.csdnimg.cn/20200925224521606.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>根据该页面的信息判断，SECRET网页可能存在一个持续时间很短的操作或者页面跳转，故借助 burpsuite 对其进行抓包分析</p><p><img src="https://img-blog.csdnimg.cn/20200925225114676.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>果然，在页面的回显中发现了新的提示 ‘secr3t.php’，访问该文件，得到进一步的线索</p><p><img src="https://img-blog.csdnimg.cn/20200925225410426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>对代码进行审计，猜测考察点可能是文件包含漏洞，结合代码的提示，先试着包含 flag.php 看看结果</p><p><img src="https://img-blog.csdnimg.cn/20200925230025699.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>首先还是考虑一下最开始的小技巧，发现响应页面并没有隐藏什么信息，故进一步对代码进行分析，考虑到代码中过滤的关键词包括 ‘input’、’data’ 等，猜测可能跟 PHP 的伪协议有点关系，故采用 <code>php://filter</code> 试着读取 flag.php 文件的内容，构造相应的 URL 如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">......?file&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;flag.php</span><br></pre></td></tr></table></figure><p><img src="https://img-blog.csdnimg.cn/2020092523101649.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>将读取到的文件内容进行 base64解码，即可得到 flag</p><p><img src="https://img-blog.csdnimg.cn/20200925231117711.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 文件包含漏洞(File Inclusion) </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>BUUCTF系列 // [极客大挑战 2019] Http</title>
+      <link href="/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/"/>
+      <url>/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>常用 HTTP 请求头</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目，在页面中没有发现明显的提示，查看网页源码，经搜索后发现一个似乎存在猫腻的网页 ‘Secret.php’ </p><p><img src="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>访问该页面，得到第一个提示</p><p><img src="https://img-blog.csdnimg.cn/20200925212926843.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>题目要求我们从 ‘<a href="https://www.Sycsecret.com&#39;" target="_blank" rel="noopener">https://www.Sycsecret.com&#39;</a> 进入该页面，故使用 burpsuite 抓包，在请求头中增加 Referer 字段即可</p><h4 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h4><p>HTTP Referer是 header 的一部分，当浏览器向 Web 服务器发送请求的时候，一般会带上 Referer，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p><p><img src="https://img-blog.csdnimg.cn/20200925214519275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>接着就得到了第二个提示，题目要求我们使用 ‘Syclover’ 浏览器访问该页面，故抓包修改 UA 字段</p><h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User Agent"></a>User Agent</h4><p>User Agent 中文名为用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。</p><p><img src="https://img-blog.csdnimg.cn/202009252153504.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>Then，遇到了第三个要求，题目要求我们必须从本地访问该页面，我们可以通过添加 XFF 头来实现伪装</p><h4 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h4><p>X-Forwarded-For（XFF）是用来识别通过 HTTP 代理或负载均衡方式连接到 Web 服务器的客户端最原始的 IP 地址的 HTTP 请求头字段。</p><p><img src="https://img-blog.csdnimg.cn/20200925220233766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>最终得到 flag</p><p><strong>PS：</strong><br>附上常用的 HTTP 请求头响应头中常用字段详解传送门：<a href="https://www.jianshu.com/p/6e86903d74f7" target="_blank" rel="noopener">前端必备HTTP技能之HTTP请求头响应头中常用字段详解</a></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> HTTP请求头 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>BUUCTF系列 // [强网杯 2019] 随便注</title>
       <link href="/2020/09/23/BUUCTF%E7%B3%BB%E5%88%97-%5B%E5%BC%BA%E7%BD%91%E6%9D%AF-2019%5D-%E9%9A%8F%E4%BE%BF%E6%B3%A8/"/>
       <url>/2020/09/23/BUUCTF%E7%B3%BB%E5%88%97-%5B%E5%BC%BA%E7%BD%91%E6%9D%AF-2019%5D-%E9%9A%8F%E4%BE%BF%E6%B3%A8/</url>

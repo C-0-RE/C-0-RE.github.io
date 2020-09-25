@@ -5,15 +5,26 @@
   
 
   
-  <title>Tag: SSTI(服务端模板注入) | 正当年少</title>
+  <title>BUUCTF系列 // [极客大挑战 2019] Http | 正当年少</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="正当年少">
-<meta property="og:url" content="http://yoursite.com/tags/SSTI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5/index.html">
+  <meta name="description" content="前言本题知识点：常用 HTTP 请求头">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUUCTF系列 &#x2F;&#x2F; [极客大挑战 2019] Http">
+<meta property="og:url" content="http://yoursite.com/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-[%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019]-Http/index.html">
 <meta property="og:site_name" content="正当年少">
+<meta property="og:description" content="前言本题知识点：常用 HTTP 请求头">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200925212926843.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200925214519275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/202009252153504.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200925220233766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2020-09-24T14:08:15.000Z">
+<meta property="article:modified_time" content="2020-09-25T14:09:27.062Z">
 <meta property="article:author" content="Lzy">
+<meta property="article:tag" content="HTTP请求头">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
   
     <link rel="alternate" href="/atom.xml" title="正当年少" type="application/atom+xml">
   
@@ -62,61 +73,78 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
+        <section id="main"><article id="post-BUUCTF系列-[极客大挑战-2019]-Http" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/" class="article-date">
+  <time datetime="2020-09-24T14:08:15.000Z" itemprop="datePublished">2020-09-24</time>
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/08/08/XCTF%E7%B3%BB%E5%88%97-Web-easytornado/" class="archive-article-date">
-  <time datetime="2020-08-08T15:22:20.000Z" itemprop="datePublished">8月 8</time>
-  
+        <!-- 不蒜子统计 -->
+        <i class="icon-smile icon"></i> 文章阅读量<span id="busuanzi_value_page_pv"></span>次
+
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/08/08/XCTF%E7%B3%BB%E5%88%97-Web-easytornado/">XCTF系列 // Web | easytornado</a>
+    <h1 class="article-title" itemprop="name">
+      BUUCTF系列 // [极客大挑战 2019] Http
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/07/26/XCTF%E7%B3%BB%E5%88%97-Web-php_rce-&-Web_python_template_injection/" class="archive-article-date">
-  <time datetime="2020-07-26T02:34:14.000Z" itemprop="datePublished">7月 26</time>
-  
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/26/XCTF%E7%B3%BB%E5%88%97-Web-php_rce-&-Web_python_template_injection/">XCTF系列 // Web | php_rce &amp; Web_python_template_injection</a>
-    </h1>
-  
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>常用 HTTP 请求头</em></strong></p>
+<a id="more"></a>
+<h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目，在页面中没有发现明显的提示，查看网页源码，经搜索后发现一个似乎存在猫腻的网页 ‘Secret.php’ </p>
+<p><img src="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>访问该页面，得到第一个提示</p>
+<p><img src="https://img-blog.csdnimg.cn/20200925212926843.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>题目要求我们从 ‘<a href="https://www.Sycsecret.com&#39;" target="_blank" rel="noopener">https://www.Sycsecret.com&#39;</a> 进入该页面，故使用 burpsuite 抓包，在请求头中增加 Referer 字段即可</p>
+<h4 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h4><p>HTTP Referer是 header 的一部分，当浏览器向 Web 服务器发送请求的时候，一般会带上 Referer，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200925214519275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>接着就得到了第二个提示，题目要求我们使用 ‘Syclover’ 浏览器访问该页面，故抓包修改 UA 字段</p>
+<h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User Agent"></a>User Agent</h4><p>User Agent 中文名为用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。</p>
+<p><img src="https://img-blog.csdnimg.cn/202009252153504.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>Then，遇到了第三个要求，题目要求我们必须从本地访问该页面，我们可以通过添加 XFF 头来实现伪装</p>
+<h4 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h4><p>X-Forwarded-For（XFF）是用来识别通过 HTTP 代理或负载均衡方式连接到 Web 服务器的客户端最原始的 IP 地址的 HTTP 请求头字段。</p>
+<p><img src="https://img-blog.csdnimg.cn/20200925220233766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>最终得到 flag</p>
+<p><strong>PS：</strong><br>附上常用的 HTTP 请求头响应头中常用字段详解传送门：<a href="https://www.jianshu.com/p/6e86903d74f7" target="_blank" rel="noopener">前端必备HTTP技能之HTTP请求头响应头中常用字段详解</a></p>
 
-    </header>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-[%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019]-Http/" data-id="ckfie4tus0003hkusbkno1prf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP%E8%AF%B7%E6%B1%82%E5%A4%B4/" rel="tag">HTTP请求头</a></li></ul>
+
+    </footer>
   </div>
-</article>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          BUUCTF系列 // [极客大挑战 2019] Secret File
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2020/09/23/BUUCTF%E7%B3%BB%E5%88%97-%5B%E5%BC%BA%E7%BD%91%E6%9D%AF-2019%5D-%E9%9A%8F%E4%BE%BF%E6%B3%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">BUUCTF系列 // [强网杯 2019] 随便注</div>
+    </a>
   
+</nav>
 
+  
+</article>
 
 </section>
         
