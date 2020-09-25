@@ -23,25 +23,6 @@
     
     
     <entry>
-      <title>BUUCTF系列 // [极客大挑战 2019] Http</title>
-      <link href="/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/"/>
-      <url>/2020/09/24/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/</url>
-      
-        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>常用 HTTP 请求头</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目，在页面中没有发现明显的提示，查看网页源码，经搜索后发现一个似乎存在猫腻的网页 ‘Secret.php’ </p><p><img src="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>访问该页面，得到第一个提示</p><p><img src="https://img-blog.csdnimg.cn/20200925212926843.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>题目要求我们从 ‘<a href="https://www.Sycsecret.com&#39;" target="_blank" rel="noopener">https://www.Sycsecret.com&#39;</a> 进入该页面，故使用 burpsuite 抓包，在请求头中增加 Referer 字段即可</p><h4 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h4><p>HTTP Referer是 header 的一部分，当浏览器向 Web 服务器发送请求的时候，一般会带上 Referer，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p><p><img src="https://img-blog.csdnimg.cn/20200925214519275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>接着就得到了第二个提示，题目要求我们使用 ‘Syclover’ 浏览器访问该页面，故抓包修改 UA 字段</p><h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User Agent"></a>User Agent</h4><p>User Agent 中文名为用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。</p><p><img src="https://img-blog.csdnimg.cn/202009252153504.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>Then，遇到了第三个要求，题目要求我们必须从本地访问该页面，我们可以通过添加 XFF 头来实现伪装</p><h4 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h4><p>X-Forwarded-For（XFF）是用来识别通过 HTTP 代理或负载均衡方式连接到 Web 服务器的客户端最原始的 IP 地址的 HTTP 请求头字段。</p><p><img src="https://img-blog.csdnimg.cn/20200925220233766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>最终得到 flag</p><p><strong>PS：</strong><br>附上常用的 HTTP 请求头响应头中常用字段详解传送门：<a href="https://www.jianshu.com/p/6e86903d74f7" target="_blank" rel="noopener">前端必备HTTP技能之HTTP请求头响应头中常用字段详解</a></p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> HTTP请求头 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>BUUCTF系列 // [强网杯 2019] 随便注</title>
       <link href="/2020/09/23/BUUCTF%E7%B3%BB%E5%88%97-%5B%E5%BC%BA%E7%BD%91%E6%9D%AF-2019%5D-%E9%9A%8F%E4%BE%BF%E6%B3%A8/"/>
       <url>/2020/09/23/BUUCTF%E7%B3%BB%E5%88%97-%5B%E5%BC%BA%E7%BD%91%E6%9D%AF-2019%5D-%E9%9A%8F%E4%BE%BF%E6%B3%A8/</url>
@@ -53,6 +34,25 @@
         <tags>
             
             <tag> SQL注入 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>BUUCTF系列 // [极客大挑战 2019] Http</title>
+      <link href="/2020/09/22/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/"/>
+      <url>/2020/09/22/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Http/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>常用 HTTP 请求头</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目，在页面中没有发现明显的提示，查看网页源码，经搜索后发现一个似乎存在猫腻的网页 ‘Secret.php’ </p><p><img src="https://img-blog.csdnimg.cn/20200925212217861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>访问该页面，得到第一个提示</p><p><img src="https://img-blog.csdnimg.cn/20200925212926843.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>题目要求我们从 ‘<a href="https://www.Sycsecret.com&#39;" target="_blank" rel="noopener">https://www.Sycsecret.com&#39;</a> 进入该页面，故使用 burpsuite 抓包，在请求头中增加 Referer 字段即可</p><h4 id="Referer"><a href="#Referer" class="headerlink" title="Referer"></a>Referer</h4><p>HTTP Referer是 header 的一部分，当浏览器向 Web 服务器发送请求的时候，一般会带上 Referer，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p><p><img src="https://img-blog.csdnimg.cn/20200925214519275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>接着就得到了第二个提示，题目要求我们使用 ‘Syclover’ 浏览器访问该页面，故抓包修改 UA 字段</p><h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User Agent"></a>User Agent</h4><p>User Agent 中文名为用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。</p><p><img src="https://img-blog.csdnimg.cn/202009252153504.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>Then，遇到了第三个要求，题目要求我们必须从本地访问该页面，我们可以通过添加 XFF 头来实现伪装</p><h4 id="X-Forwarded-For"><a href="#X-Forwarded-For" class="headerlink" title="X-Forwarded-For"></a>X-Forwarded-For</h4><p>X-Forwarded-For（XFF）是用来识别通过 HTTP 代理或负载均衡方式连接到 Web 服务器的客户端最原始的 IP 地址的 HTTP 请求头字段。</p><p><img src="https://img-blog.csdnimg.cn/20200925220233766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>最终得到 flag</p><p><strong>PS：</strong><br>附上常用的 HTTP 请求头响应头中常用字段详解传送门：<a href="https://www.jianshu.com/p/6e86903d74f7" target="_blank" rel="noopener">前端必备HTTP技能之HTTP请求头响应头中常用字段详解</a></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> HTTP请求头 </tag>
             
         </tags>
       
