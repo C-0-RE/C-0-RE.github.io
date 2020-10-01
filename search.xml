@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>BUUCTF系列 // [GXYCTF2019] Ping Ping Ping</title>
+      <link href="/2020/10/01/BUUCTF%E7%B3%BB%E5%88%97-%5BGXYCTF-2019%5D-Ping-Ping-Ping/"/>
+      <url>/2020/10/01/BUUCTF%E7%B3%BB%E5%88%97-%5BGXYCTF-2019%5D-Ping-Ping-Ping/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>命令执行漏洞</em></strong></p><a id="more"></a><h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>打开题目页面，提示很明显，那就先随便 ping 个 IP 地址看看效果</p><p><img src="https://img-blog.csdnimg.cn/20200928231521694.png#pic_center" alt="在这里插入图片描述"><br>可以看到系统命令被正常执行了，有正确回显</p><p>接下来尝试一下是否存在命令执行漏洞，首先用 ls 试一试，看看有没有提示 flag 所在的位置</p><p><img src="https://img-blog.csdnimg.cn/20200928232259297.png#pic_center" alt="在这里插入图片描述"><br>发现确实存在着命令执行，并且得到了新的线索</p><p>先试着直接用 cat 命令读取 flag.php 文件的内容</p><p><img src="https://img-blog.csdnimg.cn/20200928233026950.png#pic_center" alt="在这里插入图片描述"><br>题目报了个错，（初看没太明白这些提示，后来结合其他的报错，意识到许多字符被过滤了，Like 空格）</p><p>既然题目过滤了空格，那就用绕过（使用 <code>$IFS$9</code> 代替空格符）试试呗</p><p>PS：命令执行漏洞，绕过过滤姿势 <a href="https://www.cnblogs.com/ophxc/p/12826497.html" target="_blank" rel="noopener">传送门</a></p><p><img src="https://img-blog.csdnimg.cn/20201001171149634.png#pic_center" alt="在这里插入图片描述"><br>。。。既然不让直接读 flag，那就试试访问另外一个提示文件 ‘index.php’，看看有没有什么另外的线索</p><p><img src="https://img-blog.csdnimg.cn/20201001172138303.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>题目过滤的字段一目了然，可以看到，无法直接访问 flag.php 文件的原因在于 flag 字段也被过滤了，那就接着绕过呗，绕过姿势仍可参考前文所附 <a href="https://www.cnblogs.com/ophxc/p/12826497.html#" target="_blank" rel="noopener">连接</a></p><p><img src="https://img-blog.csdnimg.cn/20201001173039314.png#pic_center" alt="在这里插入图片描述"><br>然后就到了这题最坑的地方，他把 flag 放在了网页源码里面。。。页面又没啥明显的提示，这回显一度使我怀疑是不是哪出错了，不会没 cat 上吧。。。</p><p><img src="https://img-blog.csdnimg.cn/20201001173956396.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><strong>PS：</strong></p><p>看完 WP，学到了另外一种解法，即使用 <code>内联执行</code> 来绕过</p><p><img src="https://img-blog.csdnimg.cn/2020100117452492.png#pic_center" alt="在这里插入图片描述"><br>构造 Payload 如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?ip&#x3D;127.0.0.1;cat$IFS$9&#96;ls&#96;</span><br></pre></td></tr></table></figure><p>使用内联执行会将 `` 内的输出作为前面命令的输入，当我们输入上述 payload 时，效果等同于 <code>cat flag.php;cat index.php</code></p><p><img src="https://img-blog.csdnimg.cn/2020100117510761.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 命令执行漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>BUUCTF系列 // [SUCTF 2019] EasySQL</title>
       <link href="/2020/09/26/BUUCTF%E7%B3%BB%E5%88%97-%5BSUCTF-2019%5D-EasySQL/"/>
       <url>/2020/09/26/BUUCTF%E7%B3%BB%E5%88%97-%5BSUCTF-2019%5D-EasySQL/</url>
